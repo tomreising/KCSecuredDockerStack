@@ -1,5 +1,11 @@
+"""
+Module for Login Page
+"""
 from flask import render_template_string
 def gen_login(flask_auth_path):
+    """
+    Generate Login Page
+    """
     return render_template_string(f"""
 	<head>
     <meta charset="UTF-8">

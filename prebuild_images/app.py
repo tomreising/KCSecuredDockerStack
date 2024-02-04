@@ -1,9 +1,9 @@
 """Module for Base Flask App Code"""
-
 import os
 from flask import Flask, request, redirect, make_response
 from site_pages import (
-	login_home
+	login_home,
+    login_success
 	)
 from tokecloak.authenticator import KCAuth
 
@@ -34,25 +34,19 @@ def check_creds():
     validates token if it exists otherwise redirect to root
     sign in page
     """
-    print(request.headers.get('X-Script-Name'))
     token = request.cookies.get('token')
     if token is None:
-        print("no token")
         return redirect("/", code=302)
     if token is not None:
-        print("token")
         kc_auth = KCAuth(
 		KC_DOMAIN, KC_CLIENTREALM,
 		KC_CLIENTID, KC_CLIENTSECRET
 		)
         resp = kc_auth.token_introspect(token)
-        print(resp)
         if resp['active'] is False:
-            print('no good token')
             return redirect("/", code=302)
         if resp['active'] is True:
             return "Valid Token", 200
-    print('auth error')
     return redirect("/", code=302)
 
 @app.route('/login', methods =["POST"])
@@ -69,19 +63,13 @@ def gfg():
 		KC_DOMAIN, KC_CLIENTREALM,
 		KC_CLIENTID, KC_CLIENTSECRET
 		)
-    try:
-        token = kc_auth.get_token_basic(user,password)
-        resp = kc_auth.token_introspect(token)
-        if resp['active'] is False:
-            print("Non Atcive Token")
-            return redirect("/", code=302)
-        response = make_response('Token Acquired')
-        response.set_cookie('token', token, domain = AUTH_DOMAIN, path="/")
-        return response
-
-    except Exception as e:
-        print(e.__doc__)
+    token = kc_auth.get_token_basic(user,password)
+    resp = kc_auth.token_introspect(token)
+    if resp['active'] is False:
         return redirect("/", code=302)
+    response = make_response(login_success.gen_success(), 200)
+    response.set_cookie('token', token, domain = AUTH_DOMAIN, path="/")
+    return response
 
 if __name__=='__main__':
     app.run(port=5000, host="0.0.0.0", debug=False)
