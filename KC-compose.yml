@@ -47,10 +47,10 @@ services:
     environment:
       - FLASK_HOST=fullstackanalysts.com
       - KC_CLIENTID=pyauth
-      - KC_CLIENTREALM=fullstackanalysts
+      - KC_CLIENTREALM=fullstack
       - KC_DOMAIN=http://keycloak.fullstackanalysts.com
       - KC_CLIENTSECRET=Etpm55fqWJldG07p9h7PGNww54P7oRy6
-      - AUTH_DOMAIN=.fullstackanalysts.com
+      - AUTH_DOMAIN=fullstackanalysts.com
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.flaskauthyml.rule=Host(`fullstackanalysts.com`)"
@@ -61,6 +61,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`fullstackanalysts.com`) && PathPrefix(`/whoami`)"
       - "traefik.http.middlewares.flaskauthyml.forwardauth.address=http://fullstackanalysts.com/auth"
+      - "traefik.http.middlewares.whoami.headers.customrequestheaders.X-Script-Name=test"
       - "traefik.http.routers.whoami.middlewares=flaskauthyml"
 
   whoami2:
@@ -68,7 +69,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami2.rule=Host(`whoami.fullstackanalysts.com`)"
-      - "traefik.http.middlewares.flaskauthyml.forwardauth.address=http://fullstackanalysts.com/auth"
       - "traefik.http.routers.whoami2.middlewares=flaskauthyml"
 
 networks:

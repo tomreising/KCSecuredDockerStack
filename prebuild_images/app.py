@@ -34,6 +34,7 @@ def check_creds():
     validates token if it exists otherwise redirect to root
     sign in page
     """
+    print(request.headers.get('X-Script-Name'))
     token = request.cookies.get('token')
     if token is None:
         print("no token")
