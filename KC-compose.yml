@@ -1,0 +1,77 @@
+version: '3'
+services:
+  traefik:
+    image: traefik:v2.3
+    environment:
+      - TRAEFIK_API_INSECURE=true
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_LOG_LEVEL=INFO
+    ports:
+      - "80:80"
+      - "8081:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  postgresql:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_DB=keycloak
+      - POSTGRES_PASSWORD=SUPERsecret
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.3
+    restart: always
+    command: start
+    depends_on:
+      - postgresql
+    environment:
+      - KC_PROXY_ADDRESS_FORWARDING=true
+      - KC_HOSTNAME_STRICT=false
+      - KC_PROXY=edge
+      - KC_HTTP_ENABLED=true
+      - DB=keycloak
+      - DB_URL='jdbc:postgresql://postgres:5432/postgresql?ssl=allow'
+      - DB_USERNAME=keycloak
+      - DB_PASSWORD=SUPERsecret
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=password
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(`keycloak.fullstackanalysts.com`)"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+
+  flaskauthyml:
+    image: flaskauth
+    restart: always
+    environment:
+      - FLASK_HOST=fullstackanalysts.com
+      - KC_CLIENTID=pyauth
+      - KC_CLIENTREALM=fullstackanalysts
+      - KC_DOMAIN=http://keycloak.fullstackanalysts.com
+      - KC_CLIENTSECRET=Etpm55fqWJldG07p9h7PGNww54P7oRy6
+      - AUTH_DOMAIN=.fullstackanalysts.com
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flaskauthyml.rule=Host(`fullstackanalysts.com`)"
+
+  whoami:
+    image: containous/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`fullstackanalysts.com`) && PathPrefix(`/whoami`)"
+      - "traefik.http.middlewares.flaskauthyml.forwardauth.address=http://fullstackanalysts.com/auth"
+      - "traefik.http.routers.whoami.middlewares=flaskauthyml"
+
+  whoami2:
+    image: containous/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami2.rule=Host(`whoami.fullstackanalysts.com`)"
+      - "traefik.http.middlewares.flaskauthyml.forwardauth.address=http://fullstackanalysts.com/auth"
+      - "traefik.http.routers.whoami2.middlewares=flaskauthyml"
+
+networks:
+  network1:
+    name: main-network
+    external: true
