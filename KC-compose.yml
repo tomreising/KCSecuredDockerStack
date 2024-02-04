@@ -38,29 +38,29 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=password
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.keycloak.rule=Host(`keycloak.fullstackanalysts.com`)"
+      - "traefik.http.routers.keycloak.rule=Host(`keycloak.fullstack.com`)"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
 
   flaskauthyml:
     image: flaskauth
     restart: always
     environment:
-      - FLASK_HOST=fullstackanalysts.com
+      - FLASK_HOST=fullstack.com
       - KC_CLIENTID=pyauth
       - KC_CLIENTREALM=fullstack
-      - KC_DOMAIN=http://keycloak.fullstackanalysts.com
+      - KC_DOMAIN=http://keycloak.fullstack.com
       - KC_CLIENTSECRET=Etpm55fqWJldG07p9h7PGNww54P7oRy6
-      - AUTH_DOMAIN=fullstackanalysts.com
+      - AUTH_DOMAIN=fullstack.com
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.flaskauthyml.rule=Host(`fullstackanalysts.com`)"
+      - "traefik.http.routers.flaskauthyml.rule=Host(`fullstack.com`)"
 
   whoami:
     image: containous/whoami
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`fullstackanalysts.com`) && PathPrefix(`/whoami`)"
-      - "traefik.http.middlewares.flaskauthyml.forwardauth.address=http://fullstackanalysts.com/auth"
+      - "traefik.http.routers.whoami.rule=Host(`fullstack.com`) && PathPrefix(`/whoami`)"
+      - "traefik.http.middlewares.flaskauthyml.forwardauth.address=http://fullstack.com/auth"
       - "traefik.http.middlewares.whoami.headers.customrequestheaders.X-Script-Name=test"
       - "traefik.http.routers.whoami.middlewares=flaskauthyml"
 
@@ -68,7 +68,7 @@ services:
     image: containous/whoami
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami2.rule=Host(`whoami.fullstackanalysts.com`)"
+      - "traefik.http.routers.whoami2.rule=Host(`whoami.fullstack.com`)"
       - "traefik.http.routers.whoami2.middlewares=flaskauthyml"
 
 networks:
