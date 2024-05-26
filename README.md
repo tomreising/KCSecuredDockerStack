@@ -16,7 +16,7 @@ For this example the following host should be added to the host file (NOTE! 10.1
 cd into a new project folder and clont the repo
 
 ```
-$git clone https://github.com/tomreising/KCSecuredDockerStack.git
+git clone https://github.com/tomreising/KCSecuredDockerStack.git
 
 ```
 
