@@ -6,11 +6,11 @@ WARNING: This is for local testing only and runs over HTTP and not HTTPS. Furthe
 Note: Ensure All Hosts provided in compose.yml are added to the client machine host list located C:\Windows\System32\drivers\etc on Windows  
   
 For this example the following host should be added to the host file (NOTE! 10.10.90.90 should be updated to your machine IP):  
-10.10.90.90 example.com
-10.10.90.90 keycloak.example.com
-10.10.90.90 whoami.example.com
-10.10.90.90 auth.example.com
-10.10.90.90 traefik.example.com
+10.10.90.90 example.com  
+10.10.90.90 keycloak.example.com  
+10.10.90.90 whoami.example.com  
+10.10.90.90 auth.example.com  
+10.10.90.90 traefik.example.com  
 
 
 cd into a new project folder and clont the repo
